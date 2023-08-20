@@ -1,0 +1,38 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 3;
+  padding: 18px 0 12px 28px;
+  background-color: var(--primary-color);
+  height: 82px;
+  position: relative;
+  /* max-width: 1980px; */
+}
+
+.header .header__logo {
+  width: 178px;
+  height: 61px;
+  z-index: 10;
+}
+
+.header nav {
+  width: 83.5%;
+}
+
+.header nav ul {
+  display: flex;
+  justify-content: space-around;
+}
+
+.header nav ul a {
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--tertiary-color);
+}
+
+.header nav ul a:hover {
+  color: var(--secondary-color);
+}

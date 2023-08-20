@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/charts/activity/ActivityChart.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/charts/activity/ActivityChart.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useContext } from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import useFetch from '../../../hooks/hook';
+import { UserContext } from '../../../contexts/userContext';
+import { ActivityModel } from '../../../models/ActivityModel';
+import Loader from '../../ui/loader/Loader';
+import PropTypes from 'prop-types';
+import './activityChart.css';
+
+/**
+ * Composant du graphique d'activité quotidienne.
+ * Affiche un graphique en barres avec les données d'activité quotidienne.
+ *
+ * @component
+ */
+export default function ActivityChart() {
+  // Récupération de l'ID utilisateur depuis le contexte
+  const [userId] = useContext(UserContext);
+
+  // Appel au hook de requête pour récupérer les données d'activité
+  const { data, loading, errorMessage } = useFetch(userId, 'activity');
+
+  // Affichage du chargement pendant le chargement des données
+  if (loading) {
+    return &lt;Loader />;
+  }
+
+  // Affichage de l'erreur en cas d'échec de chargement des données
+  if (errorMessage) {
+    return (
+      &lt;div className="error">
+        Une erreur est survenue lors du chargement des données : &lt;br />
+        {errorMessage}
+      &lt;/div>
+    );
+  }
+
+  // Création d'une instance de modèle d'activité pour traiter les données
+  const activityModel = new ActivityModel(data);
+  const processedData = activityModel.getSessions();
+
+  // Fonction personnalisée pour le contenu du tooltip
+  const customTooltipFunction = ({ active, payload }) => {
+    if (active &amp;&amp; payload &amp;&amp; payload.length) {
+      return (
+        &lt;div className="custom__tooltip">
+          &lt;div className="tooltip__details">
+            &lt;p className="label">{payload[0].payload.weight}kg&lt;/p>
+            &lt;p className="label">{payload[0].payload.calories}Kcal&lt;/p>
+          &lt;/div>
+        &lt;/div>
+      );
+    }
+    return null;
+  };
+
+  // Rendu du composant graphique
+  return (
+    &lt;div className="activity__graph">
+      &lt;h3>Activité quotidienne&lt;/h3>
+      &lt;ResponsiveContainer minWidth={'100%'} aspect={22.75 / 9}>
+        &lt;BarChart
+          barGap={8}
+          data={processedData}
+          margin={{ top: 100, right: 30, left: 43, bottom: 20 }}
+        >
+          &lt;CartesianGrid strokeDasharray="3 3" vertical={false} />
+          &lt;XAxis
+            dataKey="name"
+            padding={{ left: -35, right: -35 }}
+            tickMargin={16}
+          />
+          &lt;YAxis
+            dataKey="weight"
+            orientation="right"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={45}
+            minTickGap={27}
+            tick={{ strokeWidth: 14, fill: 'var(--octonary-color)' }}
+            interval={'preserveStartEnd'}
+            allowDecimals={false}
+            domain={['dataMin-1', 'dataMax+1']}
+            yAxisId={0}
+          />
+          &lt;YAxis dataKey="calories" hide yAxisId={1} />
+          &lt;Tooltip
+            content={customTooltipFunction}
+            offset={60}
+            allowEscapeViewBox={{ x: true, y: true }}
+            position={{ y: 80 }}
+          />
+          &lt;Legend
+            verticalAlign="top"
+            align="right"
+            wrapperStyle={{ top: 35, right: 25 }}
+            payload={[
+              {
+                value: 'Poids (kg)',
+                type: 'circle',
+                id: 'weightActivity',
+              },
+              {
+                value: 'Calories brûlées (kcal)',
+                type: 'circle',
+                id: 'caloriesActivity',
+              },
+            ]}
+          />
+          &lt;Bar
+            yAxisId={0}
+            dataKey="weight"
+            fill="#282D30"
+            barSize={7}
+            radius={[3, 3, 0, 0]}
+            unit="kg"
+          />
+          &lt;Bar
+            yAxisId={1}
+            dataKey="calories"
+            fill="#E60000"
+            barSize={7}
+            radius={[3, 3, 0, 0]}
+            unit="kcal"
+          />
+        &lt;/BarChart>
+      &lt;/ResponsiveContainer>
+    &lt;/div>
+  );
+}
+
+// Définir le type de props attendus
+ActivityChart.propTypes = {
+  processedData: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      weight: PropTypes.number.isRequired,
+      calories: PropTypes.number.isRequired,
+    })
+  ),
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActivityModel.html">ActivityModel</a></li><li><a href="AverageSessionModel.html">AverageSessionModel</a></li><li><a href="PerformanceModel.html">PerformanceModel</a></li><li><a href="TodayScoreModel.html">TodayScoreModel</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ApiContext">ApiContext</a></li><li><a href="global.html#ApiProvider">ApiProvider</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#UserContext">UserContext</a></li><li><a href="global.html#UserProvider">UserProvider</a></li><li><a href="global.html#useFetch">useFetch</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sat Aug 19 2023 11:21:01 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
